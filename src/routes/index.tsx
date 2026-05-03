@@ -1,12 +1,18 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+
+// 1. Layouts
 import AuthLayout from "../layout/AuthLayout/AuthLayout";
-import UserHome from "../features/User/UserHome/UserHome";
+import MasterLayout from "../layout/MasterLayout/MasterLayout";
+import UserMasterLayout from "../layout/UserMasterLayout/UserMasterLayout";
+
+// 2. Auth Features
 import Login from "../features/Auth/Login/Login";
 import Register from "../features/Auth/Register/Register";
 import ForgetPass from "../features/Auth/ForgetPass/ForgetPass";
 import ResetPass from "../features/Auth/ResetPass/ResetPass";
 import ChangePass from "../features/Auth/ChangePass/ChangePass";
-import MasterLayout from "../layout/MasterLayout/MasterLayout";
+
+// 3. Admin Features
 import Home from "../features/Admin/Home/Home";
 import Users from "../features/Admin/Users/Users";
 import Rooms from "../features/Admin/Rooms/Rooms";
@@ -15,26 +21,39 @@ import Ads from "../features/Admin/Ads/Ads";
 import AddNewAd from "../features/Admin/Ads/AddNewAd/AddNewAd";
 import Facilities from "../features/Admin/Facilities/Facilities";
 import Bookings from "../features/Admin/Bookings/Bookings";
-import UserMasterLayout from "../layout/UserMasterLayout/UserMasterLayout";
+
+// 4. User Features
+import UserHome from "../features/User/UserHome/UserHome";
 import ExplorePage from "../pages/ExplorePage/ExplorePage";
 import FavoritesPage from "../pages/FavoritesPage/FavoritesPage";
 import BookingDetails from "../features/User/Ui/BookingDetails/BookingDetails";
 import Profile from "../features/User/Ui/Profile/Profile";
+
+// 5. Shared Components
 import NotFound from "../common/components/NotFound";
 
 export const router = createBrowserRouter([
-    {
-        path:"/",
-        element:<UserMasterLayout/>,
-        children:[
-            { index: true, element: <UserHome /> },
-        ]
-    },
+  // --- (Landing & User Home) ---
+  {
+    path: "/",
+    element: <UserMasterLayout />,
+    children: [
+      { index: true, element: <UserHome /> }, // UserHome
+      { path: "home", element: <UserHome /> },
+      { path: "explore", element: <ExplorePage /> },
+      { path: "fav", element: <FavoritesPage /> },
+      { path: "booking-details/:bookingId", element: <BookingDetails /> },
+      { path: "profile", element: <Profile /> },
+    ],
+  },
+
+  // --- (Auth) ---
   {
     path: "/auth",
-    element: <AuthLayout />, //auth
+    element: <AuthLayout />,
     children: [
-       //landing page
+      // /auth يتحول فوراً لـ /auth/login
+      { index: true, element: <Navigate to="login" replace /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "forget-password", element: <ForgetPass /> },
@@ -42,10 +61,14 @@ export const router = createBrowserRouter([
       { path: "change-password", element: <ChangePass /> },
     ],
   },
+
+  // ---(Admin Dashboard) ---
   {
     path: "/admin",
-    element: <MasterLayout />, //dashboard admin
+    element: <MasterLayout />,
     children: [
+      // Redirect: لو دخل /admin يروح فوراً لـ /admin/home 
+      { index: true, element: <Navigate to="home" replace /> },
       { path: "home", element: <Home /> },
       { path: "users", element: <Users /> },
       { path: "rooms", element: <Rooms /> },
@@ -56,17 +79,6 @@ export const router = createBrowserRouter([
       { path: "bookings", element: <Bookings /> },
     ],
   },
-    {
-    path: "/user",
-    element: <UserMasterLayout />, //user
-    children: [
-      { path: "home", element: <UserHome /> },
-      { path: "explore", element: <ExplorePage /> },
-      { path: "fav", element: <FavoritesPage /> },
-      { path: "booking-details/:bookingId", element: <BookingDetails /> },
-      { path: "profile", element: <Profile /> },
-    
-    ],
-  },
-  {path:"*",element: <NotFound/>}
+
+  { path: "*", element: <NotFound /> },
 ]);
