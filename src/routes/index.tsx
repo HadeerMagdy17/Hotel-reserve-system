@@ -31,6 +31,7 @@ import Profile from "../features/User/Ui/Profile/Profile";
 
 // 5. Shared Components
 import NotFound from "../common/components/NotFound";
+import ProtectedRoute from "../common/components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   // --- (Landing & User Home) ---
@@ -40,10 +41,15 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <UserHome /> }, // UserHome
       { path: "home", element: <UserHome /> },
-      { path: "explore", element: <ExplorePage /> },
+     {
+      element:<ProtectedRoute/>,
+      children:[
+         { path: "explore", element: <ExplorePage /> },
       { path: "fav", element: <FavoritesPage /> },
       { path: "booking-details/:bookingId", element: <BookingDetails /> },
       { path: "profile", element: <Profile /> },
+      ]
+     }
     ],
   },
 
@@ -65,7 +71,7 @@ export const router = createBrowserRouter([
   // ---(Admin Dashboard) ---
   {
     path: "/admin",
-    element: <MasterLayout />,
+    element:<ProtectedRoute><MasterLayout /></ProtectedRoute> ,
     children: [
       // Redirect: لو دخل /admin يروح فوراً لـ /admin/home 
       { index: true, element: <Navigate to="home" replace /> },
