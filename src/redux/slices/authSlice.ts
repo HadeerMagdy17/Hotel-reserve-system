@@ -30,7 +30,7 @@ export const authSlice = createSlice({
 
     localStorage.setItem('token',action.payload.token);
      localStorage.setItem('role',action.payload.role);
-      localStorage.setItem('user',JSON.stringify(action.payload.token));
+      localStorage.setItem('user',JSON.stringify(action.payload.user));
   },
 
   setLogout:(state)=>{

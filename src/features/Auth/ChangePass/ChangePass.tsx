@@ -20,6 +20,7 @@ export default function ChangePassword() {
     formState: { errors, isSubmitting },
   } = useForm<IChangePassword>();
 
+  
   const onSubmit = async (data:IChangePassword) => {
     try {
       await axiosInstance.post('/portal/users/change-password', data);

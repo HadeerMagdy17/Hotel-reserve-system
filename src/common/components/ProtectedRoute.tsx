@@ -1,12 +1,22 @@
-import { Navigate, Outlet } from "react-router-dom"
+import { Navigate, Outlet } from "react-router-dom";
 
-export default function ProtectedRoute({children}:{ children ?: React.ReactNode}) {
-   const token =localStorage.getItem('token')
+import { useAppSelector } from "../../redux/store/hook";
 
-   if(!token){
-    return <Navigate to={"/auth/login"} replace/>
-   }else{
-    return children ?<>{children}</> :<Outlet/>
-   }
-   
+interface IProps {
+  children?: React.ReactNode;
+  allowedRoles?: string[];
+}
+
+export default function ProtectedRoute({ children, allowedRoles }: IProps) {
+  const { token, role } = useAppSelector((state) => state.auth);
+
+  if (!token) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(role || "")) {
+    return <Navigate to="/home" replace />; 
+  }
+
+  return children ? <>{children}</> : <Outlet />;
 }

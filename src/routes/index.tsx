@@ -71,7 +71,7 @@ export const router = createBrowserRouter([
   // ---(Admin Dashboard) ---
   {
     path: "/admin",
-    element:<ProtectedRoute><MasterLayout /></ProtectedRoute> ,
+    element:<ProtectedRoute allowedRoles={['admin']}><MasterLayout /></ProtectedRoute> ,
     children: [
       // Redirect: لو دخل /admin يروح فوراً لـ /admin/home 
       { index: true, element: <Navigate to="home" replace /> },
