@@ -3,7 +3,7 @@ import { createTheme } from '@mui/material/styles';
 export const theme= createTheme({
     palette:{
         primary:{
-            main:"#df430a"
+            main:"#c30adf"
         },
         secondary:{
             main:'rgb(57, 203, 228)'

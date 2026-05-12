@@ -6,8 +6,12 @@ import NavBar from '../../common/components/NavBar';
 export default function MasterLayout() {
   return (
     // sidebar left side
-    <Box sx={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
-      <Box component="aside">
+    <Box sx={{ display: 'flex',   
+      height: '100vh', // تثبيت طول الصفحة بطول الشاشة بالظبط
+      width: '100vw', 
+      overflow: 'hidden' // منع السكرول الخارجي تماماً 
+      }}>
+      <Box component="aside" sx={{ height: '100vh', flexShrink: 0 }}>
         <SideBar />
       </Box>
 
@@ -20,8 +24,8 @@ export default function MasterLayout() {
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: '#f8f9fa',  
-          width: '100%',
-          overflowX: 'hidden',
+         height: '100vh', // لازم نأكد الطول هنا كمان
+          overflow: 'hidden', // منع السكرول في الـ main ككل
         }}
       >
         <Box
@@ -32,9 +36,8 @@ export default function MasterLayout() {
             alignItems: 'center',
             px: 3,
             borderBottom: '1px solid #ddd',
-            position: 'sticky', // يفضل ثابت فوق وأنتِ بتعملي Scroll
-            top: 0,
-            zIndex: 10,
+            flexShrink: 0, // عشان الناف بار ميتضغطش لو المحتوى كتر
+
           }}
         >
           <NavBar/>
@@ -45,6 +48,8 @@ export default function MasterLayout() {
           sx={{
             p: { xs: 2, md: 4 }, 
             flexGrow: 1,
+            overflowY: 'auto', // تفعيل السكرول الرأسي هنا فقط
+            overflowX: 'hidden', // منع السكرول الأفقي
           }}
         >
           <Outlet />
