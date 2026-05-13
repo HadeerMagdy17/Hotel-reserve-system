@@ -1,9 +1,226 @@
+// import React, { useState } from "react";
+// import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+// import { useNavigate, useSearchParams } from "react-router-dom";
+// import { 
+//   Box, Container, TablePagination, Typography, 
+//   AppBar, useTheme, LinearProgress, Chip, Button 
+// } from "@mui/material";
+// import { toast } from "react-toastify";
+
+// // Icons
+// import VisibilityIcon from '@mui/icons-material/Visibility';
+// import EditIcon from '@mui/icons-material/Edit';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import { AddCircleOutlineSharp } from "@mui/icons-material";
+
+// // Components & Services
+// import type { IColumn } from "../../../common/components/shared/CustomTable";
+// import type { IRoom } from "../../../interface/Rooms";
+// import CustomTable from "../../../common/components/shared/CustomTable";
+// import { fetchRoomsList, deleteRoom } from "../../../services/roomsService"; // تأكدي من إضافة deleteRoom في السيرفس
+// import type { IMenuAction } from "../../../common/components/AcctionMenu";
+// import ActionMenu from "../../../common/components/AcctionMenu";
+// import DeleteModal from "../../../common/components/DeleteModal";
+// import { DataModal } from "../../../common/components/DataModal";
+// // import DataModal from "../../../common/components/DataModal";
+
+// const Rooms: React.FC = () => {
+//   const navigate = useNavigate();
+//   const theme = useTheme();
+//   const queryClient = useQueryClient();
+//   const [searchParams, setSearchParams] = useSearchParams();
+
+//   // --- States للتحكم في المودالز ---
+//   const [deleteOpen, setDeleteOpen] = useState(false);
+//   const [dataModalOpen, setDataModalOpen] = useState(false);
+//   const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
+//   const [selectedRoom, setSelectedRoom] = useState<IRoom | null>(null);
+
+//   const page = parseInt(searchParams.get("page") || "0");
+//   const rowsPerPage = parseInt(searchParams.get("size") || "5");
+
+//   // --- React Query (جلب البيانات) ---
+//   const { data, isLoading, isFetching } = useQuery({
+//     queryKey: ["rooms", page, rowsPerPage],
+//     queryFn: () => fetchRoomsList(page + 1, rowsPerPage),
+//     placeholderData: keepPreviousData,
+//   });
+
+//   // --- React Query (Mutation للمسح) ---
+//   const { mutate: performDelete } = useMutation({
+//     mutationFn: (id: string) => deleteRoom(id),
+//     onSuccess: () => {
+//       // تحديث الجدول أوتوماتيكياً
+//       queryClient.invalidateQueries({ queryKey: ["rooms"] });
+//       toast.success("Room Deleted Successfully");
+//       setDeleteOpen(false);
+//     },
+//     onError: (error: any) => {
+//       toast.error(error.response?.data?.message || "Error deleting room");
+//     }
+//   });
+
+//   // --- دالات التحكم في المودالز ---
+//   const handleOpenDelete = (room: IRoom) => {
+//     setSelectedRoom(room);
+//     setDeleteOpen(true);
+//   };
+
+//   const handleOpenDataModal = (room: IRoom, mode: 'view' | 'edit') => {
+//     setSelectedRoom(room);
+//     setModalMode(mode);
+//     setDataModalOpen(true);
+//   };
+
+//   const handleConfirmDelete = () => {
+//     if (selectedRoom) {
+//       performDelete(selectedRoom._id);
+     
+//     }
+//   };
+
+//   // 1. تعريف الأكشنز (الربط بالمودالز)
+//   const getRoomActions = (row: IRoom): IMenuAction[] => [
+//     { 
+//       label: "View", 
+//       icon: <VisibilityIcon fontSize="small" />, 
+//       onClick: () => handleOpenDataModal(row, 'view'), 
+//       color: theme.palette.primary.main 
+//     },
+//     { 
+//       label: "Edit", 
+//       icon: <EditIcon fontSize="small" />, 
+//       onClick: () => handleOpenDataModal(row, 'edit'), 
+//       color: theme.palette.secondary.main 
+//     },
+//     { 
+//       label: "Delete", 
+//       icon: <DeleteIcon fontSize="small" />, 
+//       onClick: () => handleOpenDelete(row), 
+//       color: theme.palette.error.main 
+//     },
+//   ];
+
+//   // 2. تعريف الأعمدة
+//   const columns: IColumn[] = [
+//     { id: "roomNumber", label: "Room Number" },
+//     { 
+//       id: "images", 
+//       label: "Image",
+//       render: (row: IRoom) => (
+//         <Box 
+//           component="img" 
+//           src={row.images?.[0] || 'https://via.placeholder.com/60x50?text=Room'}    
+//           alt="Room"
+//           sx={{ width: 60, height: 50, borderRadius: "8px", objectFit: "cover" }}
+//         />
+//       )
+//     },
+//     { id: "price", label: "Price ($)" },
+//     { id: "capacity", label: "Capacity" },
+//     { 
+//       id: "facilities", 
+//       label: "Facilities",
+//       render: (row: IRoom) => (
+//         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+//           {row.facilities?.map((f) => (
+//             <Chip key={f._id} label={f.name} size="small" variant="outlined" />
+//           ))}
+//         </Box>
+//       )
+//     },
+//     {
+//       id: "actions",
+//       label: "Actions",
+//       render: (row: IRoom) => (
+//         <ActionMenu itemId={row._id} actions={getRoomActions(row)} />
+//       ),
+//     },
+//   ];
+
+//   const roomsData = data as { rooms: IRoom[]; totalCount: number } | undefined;
+
+//   const handleChangePage = (_: any, newPage: number) => {
+//     searchParams.set("page", newPage.toString());
+//     setSearchParams(searchParams);
+//   };
+
+//   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     searchParams.set("size", event.target.value);
+//     searchParams.set("page", "0");
+//     setSearchParams(searchParams);
+//   };
+
+//   return (
+//     <Box>
+//       <AppBar position="static" sx={{ backgroundColor: "#fff", color: theme.palette.primary.main, boxShadow: "none", borderBottom: `1px solid ${theme.palette.divider}` }}>
+//         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+//           <Box>
+//             <Typography variant="h6" sx={{ fontWeight: "bold" }}>Rooms Table Details</Typography>
+//             <Typography variant="body2" color="textSecondary">Manage all hotel rooms efficiently</Typography>
+//           </Box>
+//           <Button 
+//             variant="contained" 
+//             startIcon={<AddCircleOutlineSharp />} 
+//             onClick={() => navigate("/admin/rooms/add-room")} 
+//             sx={{ textTransform: 'none', borderRadius: '8px' }}
+//           >
+//             Add New Room
+//           </Button>
+//         </Box>
+//       </AppBar>
+
+//       {isFetching && !isLoading && <LinearProgress sx={{ mx: 4, mt: 1, height: '2px' }} />}
+
+//       <Container sx={{ mt: 2 }} maxWidth={false}>
+//         <CustomTable 
+//           columns={columns} 
+//           data={roomsData?.rooms || []} 
+//           isLoading={isLoading} 
+//         />
+
+//         {!isLoading && roomsData && (
+//           <TablePagination
+//             component="div"
+//             count={roomsData.totalCount || 0}
+//             page={page}
+//             rowsPerPage={rowsPerPage}
+//             rowsPerPageOptions={[5, 10, 20]}
+//             onPageChange={handleChangePage}
+//             onRowsPerPageChange={handleChangeRowsPerPage}
+//           />
+//         )}
+//       </Container>
+
+//       {/* مودال المسح */}
+//       <DeleteModal 
+//         open={deleteOpen}
+//         onClose={() => setDeleteOpen(false)}
+//         onConfirm={handleConfirmDelete}
+//         title="Delete This Room"
+//       />
+
+//       {/* مودال البيانات (عرض وتعديل) */}
+//       <DataModal 
+//         open={dataModalOpen}
+//         onClose={() => setDataModalOpen(false)}
+//         mode={modalMode}
+//         room={selectedRoom}
+//       />
+//     </Box>
+//   );
+// };
+
+// export default Rooms;
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Box, Container, TablePagination, Typography, 
-  AppBar, useTheme, LinearProgress, Chip, Button 
+  AppBar, useTheme, LinearProgress, Chip, Button, 
+  Grid,
+  Stack,
+  Paper,ImageList, ImageListItem
 } from "@mui/material";
 import { toast } from "react-toastify";
 
@@ -11,25 +228,18 @@ import { toast } from "react-toastify";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { AddCircleOutlineSharp } from "@mui/icons-material";
-import { deleteRoom, fetchRoomsList } from "../../../services/roomsService";
-import type { IColumn } from "../../../common/components/CustomTable";
-import type { IRoom } from "../../../interface/Room";
-import ActionMenu, { type IMenuAction } from "../../../common/components/ActionMenu";
-import CustomTable from "../../../common/components/CustomTable";
-import DeleteModal from "../../../common/components/DeleteModal";
-import { DataModal } from "../../../common/components/DataModal";
+import { AddCircleOutlineSharp, AttachMoney, People } from "@mui/icons-material";
 
 // Components & Services
-// import type { IColumn } from "../../../common/components/shared/CustomTable";
-// import type { IRoom } from "../../../interface/Rooms";
-// import CustomTable from "../../../common/components/shared/CustomTable";
-// import { fetchRoomsList, deleteRoom } from "../../../services/roomsService"; 
-// import type { IMenuAction } from "../../../common/components/AcctionMenu";
-// import ActionMenu from "../../../common/components/AcctionMenu";
-// import DeleteModal from "../../../common/components/DeleteModal";
-// import { DataModal } from "../../../common/components/DataModal";
-// // import DataModal from "../../../common/components/DataModal";
+
+import DeleteModal from "../../../common/components/DeleteModal";
+import { DataModal } from "../../../common/components/DataModal";
+import type { IRoom } from "../../../interface/Room";
+import { deleteRoom, fetchRoomsList } from "../../../services/roomsService";
+import type { IMenuAction } from "../../../common/components/ActionMenu";
+import type { IColumn } from "../../../common/components/CustomTable";
+import ActionMenu from "../../../common/components/ActionMenu";
+import CustomTable from "../../../common/components/CustomTable";
 
 const Rooms: React.FC = () => {
   const navigate = useNavigate();
@@ -37,27 +247,42 @@ const Rooms: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const InfoRow = ({ icon, label, value }: { icon: any, label: string, value: string | number }) => (
+  <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+    {icon}
+    <Box>
+      <Typography variant="caption" color="textSecondary" display="block">
+        {label}
+      </Typography>
+      <Typography variant="body1" fontWeight="500">
+        {value}
+      </Typography>
+    </Box>
+  </Stack>
+);
+
   // --- States للتحكم في المودالز ---
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [dataModalOpen, setDataModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
   const [selectedRoom, setSelectedRoom] = useState<IRoom | null>(null);
 
+  // حسابات الـ Pagination من الـ URL
   const page = parseInt(searchParams.get("page") || "0");
   const rowsPerPage = parseInt(searchParams.get("size") || "5");
 
-  // --- React Query ---
+  // --- 1. React Query (جلب البيانات) ---
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["rooms", page, rowsPerPage],
     queryFn: () => fetchRoomsList(page + 1, rowsPerPage),
     placeholderData: keepPreviousData,
   });
 
-  // --- React Query (Mutation للمسح) ---
+  // --- 2. Mutation للمسح ---
   const { mutate: performDelete } = useMutation({
     mutationFn: (id: string) => deleteRoom(id),
     onSuccess: () => {
-      // تحديث الجدول أوتوماتيكياً
+      // تحديث البيانات فوراً بدون إعادة تحميل الصفحة
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
       toast.success("Room Deleted Successfully");
       setDeleteOpen(false);
@@ -67,8 +292,7 @@ const Rooms: React.FC = () => {
     }
   });
 
-  // --- func contol of modals---
-
+  // --- 3. دالات التحكم في المودالز ---
   const handleOpenDelete = (room: IRoom) => {
     setSelectedRoom(room);
     setDeleteOpen(true);
@@ -83,16 +307,14 @@ const Rooms: React.FC = () => {
   const handleConfirmDelete = () => {
     if (selectedRoom) {
       performDelete(selectedRoom._id);
-     
     }
   };
 
-  // 1.
+  // --- 4. تعريف الأكشنز (View, Edit, Delete) ---
   const getRoomActions = (row: IRoom): IMenuAction[] => [
     { 
       label: "View", 
       icon: <VisibilityIcon fontSize="small" />, 
-      
       onClick: () => handleOpenDataModal(row, 'view'), 
       color: theme.palette.primary.main 
     },
@@ -105,13 +327,12 @@ const Rooms: React.FC = () => {
     { 
       label: "Delete", 
       icon: <DeleteIcon fontSize="small" />, 
-       
       onClick: () => handleOpenDelete(row), 
       color: theme.palette.error.main 
     },
   ];
 
-  // 2. تعريف الأعمدة
+  // --- 5. تعريف أعمدة الجدول ---
   const columns: IColumn[] = [
     { id: "roomNumber", label: "Room Number" },
     { 
@@ -143,9 +364,7 @@ const Rooms: React.FC = () => {
       id: "actions",
       label: "Actions",
       render: (row: IRoom) => (
-        <ActionMenu itemId={row._id} 
-        actions={getRoomActions(row)}
-         />
+        <ActionMenu itemId={row._id} actions={getRoomActions(row)} />
       ),
     },
   ];
@@ -165,6 +384,7 @@ const Rooms: React.FC = () => {
 
   return (
     <Box>
+      {/* Header */}
       <AppBar position="static" sx={{ backgroundColor: "#fff", color: theme.palette.primary.main, boxShadow: "none", borderBottom: `1px solid ${theme.palette.divider}` }}>
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
@@ -182,8 +402,10 @@ const Rooms: React.FC = () => {
         </Box>
       </AppBar>
 
+      {/* Loading Indicator */}
       {isFetching && !isLoading && <LinearProgress sx={{ mx: 4, mt: 1, height: '2px' }} />}
 
+      {/* Table Section */}
       <Container sx={{ mt: 2 }} maxWidth={false}>
         <CustomTable 
           columns={columns} 
@@ -212,16 +434,62 @@ const Rooms: React.FC = () => {
         title="Delete This Room"
       />
 
-
-      {/* view and edit */}
-      <DataModal 
-        open={dataModalOpen}
-        onClose={() => setDataModalOpen(false)}
+      {/* data modal*/}
+    
+  <DataModal 
+        open={dataModalOpen} 
+        onClose={() => setDataModalOpen(false)} 
         mode={modalMode}
-        room={selectedRoom}
-      />
+        title={modalMode === 'view' ? "Room Details" : "Edit Room"}
+        onSave={() => alert("Save Room API Called")} // نداء الـ API للتعديل مستقبلاً
+      >
+        {selectedRoom && (
+          modalMode === 'view' ? (
+            /* --- محتوى العرض (View) --- */
+            <Grid container spacing={4}>
+              <Grid item xs={12} md={6}>
+                <Stack spacing={1}>
+                  <InfoRow icon={<AttachMoney color="primary"/>} label="Price" value={`$${selectedRoom.price}`} />
+                  <InfoRow icon={<People color="primary"/>} label="Capacity" value={selectedRoom.capacity} />
+                  <Box>
+                    <Typography variant="caption" color="textSecondary">Facilities:</Typography>
+                    <Stack direction="row" gap={1} flexWrap="wrap">
+                      {selectedRoom.facilities.map(f => <Chip key={f._id} label={f.name} size="small" variant="outlined" />)}
+                    </Stack>
+                  </Box>
+                </Stack>
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>Room Gallery:</Typography>
+                <Paper variant="outlined" sx={{ p: 1, height: 250, overflowY: 'auto' }}>
+                  <ImageList cols={2} gap={8}>
+                    {selectedRoom.images.map((img, i) => (
+                      <ImageListItem key={i}>
+                        <img src={img} alt="room" style={{ borderRadius: '8px', height: '100px', objectFit: 'cover' }} />
+                      </ImageListItem>
+                    ))}
+                  </ImageList>
+                </Paper>
+              </Grid>
+            </Grid>
+          ) : (
+            /* --- محتوى التعديل (Edit) --- */
+            <Grid container spacing={3}>
+               <Grid item xs={12}>
+                  <Typography variant="h6" textAlign="center" py={5} color="textSecondary">
+                    Edit Inputs Coming Soon for Room: {selectedRoom.roomNumber}
+                  </Typography>
+               </Grid>
+            </Grid>
+          )
+        )}
+     </DataModal>
+
+
+
     </Box>
   );
 };
 
 export default Rooms;
+
