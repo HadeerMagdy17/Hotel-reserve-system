@@ -14,3 +14,14 @@ export const deleteRoom = async (roomId: string) => {
   const response = await axiosInstance.delete(`/admin/rooms/${roomId}`);
   return response.data;
 };
+//**************update room*********************
+ 
+
+export const updateRoom = async (id: string, formData: FormData) => {
+  const response = await axiosInstance.put(`/admin/rooms/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
