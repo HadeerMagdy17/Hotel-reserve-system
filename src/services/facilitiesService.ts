@@ -14,3 +14,14 @@ export const deleteFacility = async (id: string) => {
   const response = await axiosInstance.delete(`/admin/room-facilities/${id}`);
   return response.data;
 };
+//3.add
+export const addFacility = async (name: string) => {
+  const response = await axiosInstance.post("/admin/room-facilities", { name });
+  return response.data;
+};
+
+// 4. edit
+export const updateFacility = async (id: string, name: string) => {
+  const response = await axiosInstance.put(`/admin/room-facilities/${id}`, { name });
+  return response.data;
+};

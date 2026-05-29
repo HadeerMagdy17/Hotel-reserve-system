@@ -1,10 +1,10 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { 
   Box, Container, TablePagination, Typography, 
-  AppBar, useTheme, LinearProgress, Chip, Button, Stack 
+  AppBar, useTheme, LinearProgress, Button, Stack 
 } from "@mui/material";
 import { toast } from "react-toastify";
 
@@ -18,12 +18,14 @@ import { AddCircleOutlineSharp, Category, Person, CalendarToday } from "@mui/ico
 
 import DeleteModal from "../../../common/components/DeleteModal";
 import { DataModal } from "../../../common/components/DataModal";
-import { deleteFacility, fetchFacilitiesList } from "../../../services/facilitiesService";
+import { addFacility, deleteFacility, fetchFacilitiesList, updateFacility } from "../../../services/facilitiesService";
 import type { IFacility } from "../../../interface/Room";
 import type { IMenuAction } from "../../../common/components/ActionMenu";
 import type { IColumn } from "../../../common/components/CustomTable";
 import ActionMenu from "../../../common/components/ActionMenu";
 import CustomTable from "../../../common/components/CustomTable";
+import { useForm } from "react-hook-form";
+import AppTextField from "../../../common/components/AppTextField";
 
 // Helper Component لعرض البيانات داخل المودال
 const InfoRow = ({ icon, label, value }: { icon: any, label: string, value: string }) => (
@@ -43,10 +45,17 @@ const Facilities: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
+    const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+
   // --- States للتحكم في المودالز ---
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [dataModalOpen, setDataModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
+ const [modalMode, setModalMode] = useState<"view" | "edit" | "add">("view");
   const [selectedFacility, setSelectedFacility] = useState<IFacility | null>(null);
 
   const page = parseInt(searchParams.get("page") || "0");
@@ -71,6 +80,32 @@ const Facilities: React.FC = () => {
       toast.error(error.response?.data?.message || "Error deleting facility");
     }
   });
+   // --- 3. Mutation للإضافة ---
+  const { mutate: performAdd, isPending: isAdding } = useMutation({
+    mutationFn: (name: string) => addFacility(name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["facilities"] });
+      toast.success("Facility Added Successfully");
+      handleCloseModal();
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Error adding facility");
+    },
+  });
+
+  // --- 4. Mutation للتعديل ---
+  const { mutate: performUpdate, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, name }: { id: string; name: string }) =>
+      updateFacility(id, name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["facilities"] });
+      toast.success("Facility Updated Successfully");
+      handleCloseModal();
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Error updating facility");
+    },
+  });
 
   // --- 3. دالات التحكم في المودالز ---
   const handleOpenDelete = (facility: IFacility) => {
@@ -84,6 +119,11 @@ const Facilities: React.FC = () => {
     setDataModalOpen(true);
   };
 
+    const handleCloseModal = () => {
+    setDataModalOpen(false);
+    setSelectedFacility(null);
+    reset({ name: "" });
+  };
   const handleConfirmDelete = () => {
     if (selectedFacility) {
       performDelete(selectedFacility._id);
@@ -111,6 +151,28 @@ const Facilities: React.FC = () => {
       color: theme.palette.error.main 
     },
   ];
+    const handleOpenAdd = () => {
+    setModalMode("add");
+    reset({ name: "" });
+    setDataModalOpen(true);
+  };
+
+  const onSave = (formData: any) => {
+    if (modalMode === "add") {
+      performAdd(formData?.name);
+    } else if (modalMode === "edit" && selectedFacility) {
+      performUpdate({ id: selectedFacility._id, name: formData?.name });
+    }
+  };
+
+   useEffect(() => {
+    if (selectedFacility && modalMode === "edit") {
+      reset({ name: selectedFacility.name });
+    } else {
+      reset({ name: "" });
+    }
+  }, [selectedFacility, modalMode, reset]);
+
 
   // --- 5. تعريف أعمدة الجدول ---
   const columns: IColumn[] = [
@@ -163,7 +225,7 @@ const Facilities: React.FC = () => {
           <Button 
             variant="contained" 
             startIcon={<AddCircleOutlineSharp />} 
-            onClick={() => console.log("Open Add Facility Modal")}
+            onClick={handleOpenAdd}
             sx={{ textTransform: 'none', borderRadius: '8px' }}
           >
             Add New Facility
@@ -202,27 +264,50 @@ const Facilities: React.FC = () => {
       />
 
       {/* data modat*/}
-      <DataModal 
-        open={dataModalOpen} 
-        onClose={() => setDataModalOpen(false)} 
-        mode={modalMode}
-        title={modalMode === 'view' ? "Facility Details" : "Edit Facility"}
-        onSave={() => alert("Save Facility API Called")}
+        <DataModal
+        open={dataModalOpen}
+        onClose={handleCloseModal}
+        mode={modalMode === "view" ? "view" : "edit"}
+        title={
+          modalMode === "add"
+            ? "Add New Facility"
+            : modalMode === "edit"
+              ? "Edit Facility"
+              : "Facility Details"
+        }
+        onSave={handleSubmit(onSave)} 
+        isLoading={isAdding || isUpdating}
       >
-        {selectedFacility && (
-          modalMode === 'view' ? (
-            /* --- عرض تفاصيل المرفق --- */
-            <Box>
-              <InfoRow icon={<Category color="primary"/>} label="Facility Name" value={selectedFacility.name} />
-              <InfoRow icon={<Person color="primary"/>} label="Created By" value={selectedFacility.createdBy.userName} />
-              <InfoRow icon={<CalendarToday color="primary"/>} label="Created At" value={new Date(selectedFacility.createdAt).toLocaleString()} />
-            </Box>
-          ) : (
-            /* --- تعديل اسم المرفق --- */
-            <Box sx={{ py: 2 }}>
-             edit facility comming sooon
-            </Box>
-          )
+        {modalMode === "view" && selectedFacility ? (
+          <Box>
+            <InfoRow
+              icon={<Category color="primary" />}
+              label="Facility Name"
+              value={selectedFacility.name}
+            />
+            <InfoRow
+              icon={<Person color="primary" />}
+              label="Created By"
+              value={selectedFacility.createdBy.userName}
+            />
+            <InfoRow
+              icon={<CalendarToday color="primary" />}
+              label="Created At"
+              value={new Date(selectedFacility.createdAt).toLocaleString()}
+            />
+          </Box>
+        ) : (
+          <Box sx={{ py: 2 }}>
+            <AppTextField
+              label="Facility Name"
+              name="name"
+              register={register}
+              error={errors.name}
+              validation={{ required: "Facility name is required" }}
+              type="text"
+              defaultValue={selectedFacility?.name || ""}
+            />
+          </Box>
         )}
       </DataModal>
     </Box>
