@@ -23,7 +23,7 @@ import Facilities from "../features/Admin/Facilities/Facilities";
 import Bookings from "../features/Admin/Bookings/Bookings";
 
 // 4. User Features
-import UserHome from "../features/User/UserHome/UserHome";
+import UserHome from "../features/User/LandingPage/LandingPage";
 import ExplorePage from "../pages/ExplorePage/ExplorePage";
 import FavoritesPage from "../pages/FavoritesPage/FavoritesPage";
 import BookingDetails from "../features/User/Ui/BookingDetails/BookingDetails";
