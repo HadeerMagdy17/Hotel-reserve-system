@@ -17,10 +17,13 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
         bgcolor: 'background.paper', boxShadow: 24, p: 4, borderRadius: 3, textAlign: 'center',
         outline: "none"
       }}>
-        <Typography id="login-modal-title" variant="h5" fontWeight={700} mb={2} color="primary.main">
-          🔑 Hey Login Required !!
+        <Typography id="login-modal-title" variant="h5" fontWeight={700} m={2} color="primary.main">
+          🔑 Hey Login Required  🔑
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={4}>
+        <Typography id="login-modal-title" variant="h6" fontWeight={700} m={2} color="primary.main">
+          🔑 you need access  🔑
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{margin:"1rem"}}>
           To unlock full access, book vacations, and explore fine details, please log in to your account.
         </Typography>
         

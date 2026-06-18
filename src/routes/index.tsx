@@ -32,6 +32,7 @@ import Profile from "../features/User/Ui/Profile/Profile";
 // 5. Shared Components
 import NotFound from "../common/components/NotFound";
 import ProtectedRoute from "../common/components/ProtectedRoute";
+import RoomDetails from "../features/User/Ui/RoomDetails/RoomDetails";
 
 export const router = createBrowserRouter([
   // --- (Landing & User Home) ---
@@ -41,12 +42,14 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <UserHome /> }, // UserHome
       { path: "home", element: <UserHome /> },
+       { path: "explore", element: <ExplorePage /> },
      {
       element:<ProtectedRoute/>,
       children:[
-         { path: "explore", element: <ExplorePage /> },
+        
       { path: "fav", element: <FavoritesPage /> },
       { path: "booking-details/:bookingId", element: <BookingDetails /> },
+      { path: "room-details/:roomId", element: <RoomDetails /> },
       { path: "profile", element: <Profile /> },
       ]
      }

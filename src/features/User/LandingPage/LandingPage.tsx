@@ -11,7 +11,7 @@ export default function LandingPage() {
   return (
     <Box
       component="main"
-      sx={{ display: "flex", flexDirection: "column", gap: { xs: 6, md: 10 } }}
+      sx={{ display: "flex", flexDirection: "column", gap: { xs: 2, md: 4 } }}
     >
       <HeroSection />
 
