@@ -1,280 +1,125 @@
+ import React from "react";
+import { Box, Typography, Skeleton, Pagination } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
+import fallbackImg from "../../../src/assets/images/hotal3.jpg";
+import CardItem from "../../features/User/Ui/shared/CardItem";
+import NavBar from "../../features/User/LandingPage/components/NavBar";
+
+import type { IRoomsResponse,FavoriType } from "../../interface/userTypes";
+import { fetchExploreRooms, fetchFavoriteRooms } from "../../services/userServices";
+
+export default function ExploreRooms() {
+//save pagenation page num when refresh
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
 
 
-export default function ExplorePage() {
+  const { data, isLoading, isError } = useQuery<IRoomsResponse>({
+    queryKey: ["exploreRooms", page],
+    queryFn: () => fetchExploreRooms(page),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const roomsList = data?.rooms || [];
+  const totalRooms = data?.totalCount || 0;
+  const pageCount = Math.ceil(totalRooms / 8); 
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setSearchParams({ page: value.toString() }); 
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const { data: favoriteRooms = [] } = useQuery<FavoriType[]>({
+  queryKey: ["favoriteRooms"],
+  queryFn: fetchFavoriteRooms,  
+  enabled: !!localStorage.getItem("token"), // الفحص مسجل دخول أو لا
+});
+ 
+  // تحسين الأداء بكاش ميمو للـ Set
+  const favoriteRoomIdsSet = React.useMemo(() => {
+    const ids = favoriteRooms.flatMap((fav) => 
+      fav.rooms?.map((room) => room._id) || []
+    );
+    return new Set(ids);
+  }, [favoriteRooms]);
+
+  const checkIfRoomInFavori = React.useCallback((id: string) => {
+    return favoriteRoomIdsSet.has(id);
+  }, [favoriteRoomIdsSet]);
+
   return (
-    <div>ExplorePage</div>
-  )
+    <>
+      <NavBar/>
+      <Box sx={{ width: "85%", margin: "auto", padding: "4px 0" }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 4 }}>
+          <Typography variant="body2" sx={{ color: "#B0B0B0" }}>
+            Home <span style={{ color: "#152C5B", fontWeight: "500", margin: "0 8px" }}>/</span> Explore
+          </Typography>
+        </Box>
+
+        <Typography variant="h4" component="h1" sx={{ textAlign: "center", fontWeight: "bold", color: "#152C5B", my: 3 }}>
+          Explore All Rooms
+        </Typography>
+
+        <Typography variant="h6" sx={{ fontWeight: "bold", color: "#152C5B", mb: 3, mt: 5 }}>
+          All Rooms
+        </Typography>
+
+        {isLoading ? (
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" }, gap: "25px" }}>
+            {Array.from(new Array(8)).map((_, index) => (
+              <Box key={index}>
+                <Skeleton variant="rectangular" width="100%" height="180px" sx={{ borderRadius: "15px", mb: 1 }} />
+                <Skeleton variant="text" width="60%" height="25px" />
+              </Box>
+            ))}
+          </Box>
+        ) : isError ? (
+          <Typography color="error" sx={{ textAlign: "center", py: 4 }}>
+            Failed to load rooms. Please try again later.
+          </Typography>
+        ) : (
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr 1fr" }, gap: "25px" }}>
+            {roomsList.map((room) => {
+              const roomImage = room.images && room.images[0] ? room.images[0] : fallbackImg;
+              const isFavorite = checkIfRoomInFavori(room._id);
+
+              return (
+                <CardItem
+                  key={room._id}
+                  id={room._id}  
+                  img={roomImage}
+                  title={room.roomNumber}
+                  price={room.price}
+                  isExplore={true}
+                  isFavoriteInitially={isFavorite} 
+                />
+              );
+            })}
+          </Box>
+        )}
+
+        {pageCount > 1 && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 6, mb: 4 }}>
+            <Pagination 
+              count={pageCount} 
+              page={page} 
+              onChange={handlePageChange}
+              color="primary"
+              shape="rounded"
+              sx={{
+                "& .MuiPaginationItem-root": { color: "#152C5B", fontWeight: "500" },
+                "& .MuiPaginationItem-root.Mui-selected": {
+                  backgroundColor: "#152C5B",
+                  color: "#fff",
+                  "&:hover": { backgroundColor: "#152C5B" }
+                }
+              }}
+            />
+          </Box>
+        )}
+      </Box>
+    </>
+  );
 }
-// import {
-//   Box,
-//   Chip,
-//   Grid as Grid,
-//   Pagination,
-//   Stack,
-//   Skeleton,
-//   Typography,
-// } from "@mui/material";
-
-// import { useLocation } from "react-router-dom";
-// import { motion } from "framer-motion";
-// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import { useState, ReactNode, } from "react";
-
-// import { AxiosError } from "axios";
-// import { axiosInstance, getRoomDetails, PORTAL_URLS } from "../../api/axiosInstace";
-// import { toast } from "react-toastify";
-
-// // import { PhotoCard } from "../../../Components/AdminSharedComponents/PhotoCard/PhotoCard";
-// // import {
-// //   apiClient,
-// //   getRoomDetails,
-// //   PORTAL_URLS,
-// // } from "../../../Api/END_POINTS";
-// // import BasicBreadcrumbs from "../../../Components/UserSharedComponents/BasicBreadcrumbs/BasicBreadcrumbs";
-
-// // --- الـ Interfaces المخصصة للداتا ---
-// interface roomType {
-//   _id: string;
-//   roomNumber: string;
-//   images: string[];
-//   price: number;
-// }
-
-// interface FavoriType {
-//   _id: string;
-//   rooms: roomType; // بناءً على الـ API القديم بتاعك
-// }
-
-// interface AllRoomsResponseType {
-//   data: {
-//     rooms: roomType[];
-//     totalCount: number;
-//   };
-// }
-
-// interface PickerData {
-//   state: { 
-//     data: { rooms: roomType[]; totalCount: number };
-//     startDate?: Date;
-//     endDate?: Date;
-//   } | null;
-// }
-
-// export default function Explore() {
-//   const location: PickerData = useLocation();
-//   const queryClient = useQueryClient();
-
-//   // إدارة حالات الـ Pagination والـ Filters
-//   const [page, setPage] = useState<number>(1);
-//   const [size] = useState<number>(8);
-//   const [selectedFilter, setSelectedFilter] = useState<"highest" | "lowest" | null>(null);
-
-//   // فحص وجود التوكن بشكل ديناميكي
-//   const hasToken = !!localStorage.getItem("token");
-
-//   // 1️⃣ جلب جميع الغرف (Rooms Query)
-//   const { data: roomsData, isLoading: isRoomsLoading } = useQuery({
-//     queryKey: ["exploreRooms", page, size],
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<AllRoomsResponseType>(getRoomDetails, {
-//         params: { page, size },
-//       });
-//       return response.data.data;
-//     },
-//     // لو باصينا داتا من صفحة الـ Home (البحث)، نستخدمها كـ Initial Data بدل ما يضرب ريكويست فوراً
-//     initialData: location.state?.data ? {
-//       rooms: location.state.data.rooms,
-//       totalCount: location.state.data.totalCount
-//     } : undefined,
-//     staleTime: 1000 * 60 * 5, // كاش لمدة 5 دقائق
-//   });
-
-//   const rooms = roomsData?.rooms || [];
-//   const totalCount = roomsData?.totalCount || 0;
-
-//   // 2️⃣ جلب غرف المفضلة (Favorite Rooms Query) - يشتغل فقط لو مسجل دخول
-//   const { data: favoriteRooms = [] } = useQuery({
-//     queryKey: ["favoriteRooms"],
-//     queryFn: async () => {
-//       const response = await axiosInstance.get<{ data: { favoriteRooms: FavoriType[] } }>(
-//         PORTAL_URLS.favoriRoom
-//       );
-//       return response.data.data.favoriteRooms || [];
-//     },
-//     enabled: hasToken, // حماية الـ API من الضرب لو مفيش توكن
-//   });
-
-//   // 3️⃣ دالة الـ Toggle Favorite باستخدام useMutation
-//   const favoriteMutation = useMutation({
-//     mutationFn: async ({ roomId, action }: { roomId: string; action: "add" | "remove" }) => {
-//       if (action === "add") {
-//         return await axiosInstance.post(PORTAL_URLS.favoriRoom, { roomId });
-//       } else {
-//         return await axiosInstance.delete(`${PORTAL_URLS.favoriRoom}/${roomId}`, {
-//           data: { roomId },
-//         });
-//       }
-//     },
-//     onMutate: () => {
-//       return toast.loading("Processing...");
-//     },
-//     onSuccess: (response, variables, contextId) => {
-//       // تحديث الكاش فوراً لضمان مزامنة الأيقونات في الأبلكيشن بالكامل
-//       queryClient.invalidateQueries({ queryKey: ["favoriteRooms"] });
-//       toast.success(response.data?.message || "Favorites updated successfully!", {
-//         id: contextId,
-//       });
-//     },
-//     onError: (error: AxiosError<{ message?: string }>, variables, contextId) => {
-//       toast.error(error.response?.data?.message || "Something went wrong.", {
-//         id: contextId,
-//       });
-//     }
-//   });
-
-//   // فحص هل الغرفة داخل المفضلة
-//   const checkIfRoomInFavori = (id: string) => {
-//     return favoriteRooms.some((fav) => fav.rooms?._id === id);
-//   };
-
-//   // دالة الـ Toggle عند الضغط على القلب
-//   const handleFavoriteToggle = (roomId: string) => {
-//     // 🔒 لو مش مسجل، امنعي الريكويست فوراً وتقدري تفتحي مودال الـ Login هنا
-//     if (!hasToken) {
-//       toast.error("Please login first to manage your favorites!");
-//       return;
-//     }
-
-//     const isFav = checkIfRoomInFavori(roomId);
-//     favoriteMutation.mutate({
-//       roomId,
-//       action: isFav ? "remove" : "add",
-//     });
-//   };
-
-//   // ترتيب الغرف محلياً بناءً على الفلتر المختار
-//   const getSortedRooms = () => {
-//     if (!selectedFilter) return rooms;
-//     return [...rooms].sort((a, b) =>
-//       selectedFilter === "highest" ? b.price - a.price : a.price - b.price
-//     );
-//   };
-
-//   const sortedRooms = getSortedRooms();
-
-//   return (
-//     <Box sx={{ width: "85%", margin: "auto", padding: "20px 0" }}>
-//       {/* سيكشن الهيدر والـ Breadcrumbs */}
-//       <Box>
-      
-
-//           <Grid size={{ xs: 12, sm: 6 }} sx={{ textAlign: "center" }}>
-//             <Typography
-//               variant="h5"
-//               component={"h2"}
-//               sx={{
-//                 fontWeight: "600",
-//                 fontSize: "2.1rem",
-//                 color: "#152C5B",
-//                 marginBlock: { xs: "0.5rem", sm: "1rem" },
-//               }}
-//             >
-//               {location.state?.startDate && location.state?.endDate
-//                 ? `${new Date(location.state.startDate).toLocaleDateString()} - ${new Date(location.state.endDate).toLocaleDateString()} Available Rooms`
-//                 : "Explore All Rooms"}
-//             </Typography>
-//           </Grid>
-//           <Grid size={{ xs: false, sm: 3 }}></Grid>
-//         </Grid>
-//       </Box>
-
-//       {/* سيكشن الفلاتر (Chips) */}
-//       // <Box sx={{ marginBlock: "1.5rem" }}>
-//       //   <Stack direction="row" spacing={1}>
-//       //     <Chip
-//       //       label="Lowest Price"
-//       //       clickable
-//       //       color={selectedFilter === "lowest" ? "primary" : "default"}
-//       //       onClick={() => setSelectedFilter(selectedFilter === "lowest" ? null : "lowest")}
-//       //     />
-//       //     <Chip
-//       //       label="Highest Price"
-//       //       clickable
-//       //       color={selectedFilter === "highest" ? "primary" : "default"}
-//       //       onClick={() => setSelectedFilter(selectedFilter === "highest" ? null : "highest")}
-//       //     />
-//       //   </Stack>
-//       // </Box>
-
-//       // <Typography
-//       //   variant="body1"
-//       //   sx={{
-//       //     paddingBottom: "16px",
-//       //     paddingTop: "20px",
-//       //     color: "#152C5B",
-//       //     fontWeight: "700",
-//       //   }}
-//       // >
-//       //   All Rooms
-//       // </Typography>
-
-//       {/* عرض الكروت أو الـ Skeletons أثناء التحميل */}
-//       <Grid container spacing={3}>
-//         {isRoomsLoading
-//           ? Array.from(new Array(8)).map((_, index) => (
-//               <Grid size={{ xs: 12, md: 4, lg: 3 }} key={index}>
-//                 <Skeleton
-//                   variant="rectangular"
-//                   width="100%"
-//                   height={250}
-//                   sx={{ borderRadius: "15px", marginBottom: "10px" }}
-//                 />
-//                 <Skeleton variant="text" width="60%" />
-//                 <Skeleton variant="text" width="40%" />
-//               </Grid>
-//             ))
-//           : sortedRooms?.map((room: roomType, index) => (
-//               <Grid size={{ xs: 12, md: 4, lg: 3 }} key={room._id}>
-//                 <OpacityAnimate delay={index * 0.05}>
-//                   <PhotoCard
-//                     value={room}
-//                     eyeIcon
-//                     isFavorite={checkIfRoomInFavori(room._id)}
-//                     isLoading={favoriteMutation.isPending && favoriteMutation.variables?.roomId === room._id}
-//                     onToggleFavorite={() => handleFavoriteToggle(room._id)}
-//                   />
-//                 </OpacityAnimate>
-//               </Grid>
-//             ))}
-//       </Grid>
-
-//       {/* الـ Pagination الذكي مدمج مع الـ State وبيرندر بناء على الـ Total Count القادم من السيرفر */}
-//       {totalCount > 0 && (
-//         <Pagination
-//           onChange={(_, value) => setPage(value)}
-//           page={page}
-//           count={Math.ceil(totalCount / size)}
-//           color="primary"
-//           sx={{ marginTop: "40px", display: "flex", justifyContent: "center" }}
-//         />
-//       )}
-//     </Box>
-//   );
-// }
-
-// // مكون الحركة بموشن فريمر
-// const OpacityAnimate = ({ children, delay }: { children: ReactNode; delay: number }) => {
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 15 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{
-//         type: "tween",
-//         duration: 0.4,
-//         delay: delay,
-//       }}
-//     >
-//       {children}
-//     </motion.div>
-//   );
-// };

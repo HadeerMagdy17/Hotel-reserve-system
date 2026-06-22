@@ -36,7 +36,7 @@ export default function NavBar() {
   const BaseNavBar = ["Home", "Explore"];
   
   const LoginUser = [
-    { name: "Favorite", Routing: "favorite-rooms" },
+    { name: "Favorite", Routing: "fav" },
    
   ];
   
