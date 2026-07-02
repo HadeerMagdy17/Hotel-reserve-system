@@ -29,7 +29,7 @@ import AppTextField from "../../../common/components/AppTextField";
 
 // Helper Component لعرض البيانات داخل المودال
 const InfoRow = ({ icon, label, value }: { icon: any, label: string, value: string }) => (
-  <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+  <Stack direction="row"  spacing={2} sx={{ mb: 2 , alignItems:"center"}}>
     {icon}
     <Box>
       <Typography variant="caption" color="textSecondary" display="block">{label}</Typography>

@@ -29,7 +29,7 @@ export const DataModal: React.FC<DataModalProps> = ({ open, onClose, mode, title
         
         {/* Header */}
         <Box sx={{ bgcolor: isView ? "primary.main" : "secondary.main", color: "white", p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{alignItems:"center"}}>
             <MeetingRoom />
             <Typography variant="h6">{title}</Typography>
           </Stack>
@@ -42,7 +42,7 @@ export const DataModal: React.FC<DataModalProps> = ({ open, onClose, mode, title
 
           <Divider sx={{ my: 3 }} />
           
-          <Box display="flex" justifyContent="flex-end" gap={2}>
+          <Box display="flex" sx={{justifyContent: "flex-end" }}  gap={2}>
             <Button onClick={onClose} variant="outlined">Cancel</Button>
 
             {!isView && (

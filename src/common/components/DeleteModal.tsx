@@ -7,6 +7,7 @@ interface IProps {
   onClose: () => void;
   onConfirm: () => void; // الفانكشن اللي هتنفذ المسح فعلياً
   title: string;
+  isLoading?:boolean
 }
 
 const DeleteModal: React.FC<IProps> = ({ open, onClose, onConfirm, title }) => {

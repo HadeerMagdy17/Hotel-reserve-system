@@ -45,9 +45,9 @@ export const DonutCard = ({ data, total, legend, title }: any) => (
         </Box>
       </Box>
       
-      <Stack direction="row" justifyContent="center" spacing={2} flexWrap="wrap" mt={2}>
+      <Stack direction="row" sx={{justifyContent:"center"}} spacing={2} flexWrap="wrap" mt={2}>
         {legend.map((l: any, i: number) => (
-          <Stack key={i} direction="row" alignItems="center" spacing={0.5}>
+          <Stack key={i} direction="row" sx={{alignItems:"center"}} spacing={0.5}>
             <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: l.color }} />
             <Typography variant="caption" color="text.secondary">
               {l.label}: {Number(l.value).toLocaleString()}

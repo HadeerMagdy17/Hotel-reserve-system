@@ -65,8 +65,8 @@ export default function HeroSection() {
         <Grid
           container
           spacing={2}
-          alignItems="center"
-          sx={{ display: "flex", justifyContent: "space-between" }}
+          // alignItems="center"
+          sx={{ display: "flex", justifyContent: "space-between",alignItems:"center"}}
         >
           {/* left side */}
           <Grid item xs={12} sm={8}>

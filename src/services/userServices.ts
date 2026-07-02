@@ -1,6 +1,6 @@
 import { axiosInstance } from "../api/axiosInstace";
 import { getRoomDetails, PORTAL_URLS } from "../api/endpoints";
-import type { IRoomsResponse , FavoritesResponseType, FavoriType} from "../interface/userTypes";
+import type { IRoomsResponse , FavoritesResponseType, FavoriType, IRoomDetailsResponse} from "../interface/userTypes";
 
 export const fetchExploreRooms = async (page: number): Promise<IRoomsResponse> => {
   const response = await axiosInstance.get(getRoomDetails, {
@@ -29,5 +29,22 @@ export const toggleFavoriteRoom = async ({ roomId, isFav }: { roomId: string; is
     return await axiosInstance.delete(`${PORTAL_URLS.favoriRoom}/${roomId}`, {
       data: { roomId },
     });
+  }
+};
+// ***********one room details by id ***************
+export const fetchRoomDetails = async (id: string) => {
+  const response = await axiosInstance.get(`/portal/rooms/${id}`);
+  console.log(response?.data?.data?.room)
+  return response?.data?.data?.room; // بنقرأ الـ room مباشرة جوه data
+};
+
+export const fetchRoomReviews = async (id: string) => {
+  try {
+    const response = await axiosInstance.get(`/portal/room-reviews/${id}`);
+    // بنرجع الـ reviews لو موجودة، لو مش موجودة بنرجع مصفوفة فاضية
+    return response.data.data.roomReviews || response.data.data.reviews || [];
+  } catch (error) {
+    console.error("Error fetching reviews, returning empty array:", error);
+    return []; // خط دفاع: لو ريكويست الريفيو فشل لأي سبب، الصفحة هتفتح برضه بس الكومنتات هتبقى فاضية
   }
 };

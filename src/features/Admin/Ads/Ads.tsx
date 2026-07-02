@@ -48,7 +48,7 @@ import {
   deleteAd,
   updateAd,
 } from "../../../services/adsService";
-import type { IAd, IAdPayload, IAdsResponse } from "../../../interface/Ads";
+import type { IAd, IAdsResponse } from "../../../interface/Ads";
 import type { IMenuAction } from "../../../common/components/ActionMenu";
 import type { IColumn } from "../../../common/components/CustomTable";
 
@@ -62,13 +62,15 @@ const InfoRow = ({
   label: string;
   value: string;
 }) => (
-  <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+  <Stack direction="row"  spacing={2} sx={{ mb: 2 ,alignItems:"center"}}>
     {icon}
     <Box>
-      <Typography variant="caption" color="textSecondary" display="block">
+      {/* 🎯 التعديل: نقل display إلى sx */}
+      <Typography variant="caption" color="textSecondary" sx={{ display: "block" }}>
         {label}
       </Typography>
-      <Typography variant="body1" fontWeight="500">
+      {/* 🎯 التعديل: نقل fontWeight إلى sx */}
+      <Typography variant="body1" sx={{ fontWeight: "500" }}>
         {value}
       </Typography>
     </Box>
@@ -117,7 +119,8 @@ const Ads: React.FC = () => {
       toast.error(error.response?.data?.message || "Error updating ad");
     },
   });
-//delete mutation
+
+  // delete mutation
   const { mutate: performDelete, isPending: isDeleting } = useMutation({
     mutationFn: (id: string) => deleteAd(id),
     onSuccess: () => {
@@ -142,7 +145,6 @@ const Ads: React.FC = () => {
     setSelectedAd(ad);
     setModalMode("edit");
     
-    // التعديل هنا: الـ States بتاخد القيمة الحقيقية فوراً عند الكليكة وبشكل مستقر بعيد عن الـ useEffect
     setIsActiveStatus(ad.isActive);
     setDiscountValue(ad.room?.discount || 0); 
     
@@ -320,7 +322,6 @@ const Ads: React.FC = () => {
         onSave={modalMode === "edit" ? handleFormSubmit : undefined} 
       >
         {modalMode === "view" && selectedAd ? (
-          //if modal is view
           <Box sx={{ py: 1 }}>
             <InfoRow
               icon={<MeetingRoom color="primary" />}
@@ -348,9 +349,9 @@ const Ads: React.FC = () => {
             />
           </Box>
         ) : (
-          //if modal is edit
           <Box sx={{ py: 2 }}>
-            <Typography variant="body1" fontWeight="bold" sx={{ mb: 1 }}>
+            {/* 🎯 التعديل: نقل fontWeight إلى sx */}
+            <Typography variant="body1" sx={{ fontWeight: "bold", mb: 1 }}>
               Room Number: {selectedAd?.room?.roomNumber}
             </Typography>
             <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>

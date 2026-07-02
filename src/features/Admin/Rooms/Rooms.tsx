@@ -120,7 +120,7 @@ const onUpdateSave = (formDataJson: any) => {
   };
 
   const InfoRow = ({ icon, label, value }: { icon: any, label: string, value: string | number }) => (
-    <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 2 }}>
+    <Stack direction="row" sx={{alignItems:"center",mb:2}} spacing={2} >
       {icon}
       <Box>
         <Typography variant="caption" color="textSecondary" display="block">{label}</Typography>

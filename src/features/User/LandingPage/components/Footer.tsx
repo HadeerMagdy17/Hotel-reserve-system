@@ -1,7 +1,5 @@
-import {  Grid, Box, ScopedCssBaseline } from "@mui/material";
-
+import { Grid, Box, ScopedCssBaseline } from "@mui/material";
 import { Typography, List, ListItem } from "@mui/material";
-
 
 function Footer() {
   const footerSections = [
@@ -47,45 +45,53 @@ function Footer() {
         <Grid
           container
           spacing={4}
-          justifyContent="space-between"
-          alignItems="center"
+          // 👈 أفضل من center لتنسيق القوائم من الأعلى بشكل احترافي
           sx={{
+             justifyContent:"space-between",
+          alignItems:"flex-start",
             pl: { xs: "2rem", md: "8rem" },
           }}
         >
           {footerSections.map((section, index) => (
             <Grid key={index} item xs={12} sm={6} md={3}>
-              <Typography
-                fontSize={"15px"}
-                variant="h5"
-                component="p"
-                gutterBottom
-              >
-                {index === 0 ? (
-                  <>
-                   <span style={{ color: "#007BFF" }}>Stay</span>
-                    <span style={{ color: "black" }}>cation.</span> 
-                   
-                    
-                  </>
-                ) : (
-                  <Typography
-                    style={{ color: "rgba(21, 44, 91, 1)" }}
-                    fontSize={"18px"}
-                    fontWeight={"600"}
-                    textAlign={"left"}
-                  >
-                    {section.title}
-                  </Typography>
-                )}
-              </Typography>
+              {/* 🎯 قمنا بحل مشكلة التداخل بفصل العنوانين تماماً ومنع وضع Typography داخل Typography */}
+              {index === 0 ? (
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    mb: 2
+                  }}
+                >
+                  <span style={{ color: "#007BFF" }}>Stay</span>
+                  <span style={{ color: "black" }}>cation.</span>
+                </Typography>
+              ) : (
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "rgba(21, 44, 91, 1)",
+                    fontSize: "18px",
+                    fontWeight: "600",
+                    textAlign: "left",
+                    mb: 2 // 👈 بديل ممتاز لـ gutterBottom للتحكم بالمسافة بشكل أدق
+                  }}
+                >
+                  {section.title}
+                </Typography>
+              )}
+
+              {/* القوائم والروابط */}
               {section.links && (
-                <List>
+                <List disablePadding>
                   {section.links.map((link, linkIndex) => (
                     <ListItem
                       key={linkIndex}
+                      disableGutters
                       sx={{
                         color: "rgba(176, 176, 176, 1)",
+                        py: 0.5, // مسافات عمودية متناسقة بين الروابط
                       }}
                     >
                       {link.text}
@@ -93,14 +99,16 @@ function Footer() {
                   ))}
                 </List>
               )}
+
               {section.contactInfo && (
-                <List>
+                <List disablePadding>
                   {section.contactInfo.map((info, infoIndex) => (
                     <ListItem
                       key={infoIndex}
+                      disableGutters
                       sx={{
-                        
                         color: "rgba(176, 176, 176, 1)",
+                        py: 0.5,
                       }}
                     >
                       {info.text}
@@ -111,15 +119,17 @@ function Footer() {
             </Grid>
           ))}
         </Grid>
+
+        {/* الكوبي رايت السفلية */}
         <Typography
+          variant="body1"
           sx={{
             fontWeight: "bold",
-            margin:"auto",
+            margin: "auto",
             color: "rgba(176, 176, 176, 1)",
             marginTop: "2.5rem",
-            textAlign:"center"
+            textAlign: "center"
           }}
-          variant="h6"
         >
           Copyright 2019 • All rights reserved • Staycation
         </Typography>

@@ -6,10 +6,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useNavigate, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 import { axiosInstance } from "../../../api/axiosInstace";
 import { setLogin } from "../../../redux/slices/authSlice";
 import { toast } from "react-toastify";
+import { useNavigate, useLocation } from "react-router-dom"; // 👈 ضيفي useLocation
 import type {
   ILoginInputs,
   ILoginResponse,
@@ -20,6 +21,7 @@ import AppTextField from "../../../common/components/AppTextField";
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+const location = useLocation(); // 👈 سحبي الـ location الحالي
 
   const {
     register,
@@ -32,38 +34,42 @@ export default function Login() {
     },
   });
 
+
   const onSubmit = async (data: ILoginInputs) => {
-    try {
-      const response = await axiosInstance.post<ILoginResponse>(
-        "/portal/users/login",
-        data,
-      );
+  try {
+    const response = await axiosInstance.post<ILoginResponse>(
+      "/portal/users/login",
+      data,
+    );
 
-      // فك البيانات اللي راجعة (Token & User info)
-      const { token, user } = response.data.data;
-      toast.success("Welcome Back! Login Successful");
+    // فك البيانات اللي راجعة (Token & User info)
+    const { token, user } = response.data.data;
+    toast.success("Welcome Back! Login Successful");
 
-      // 3. تحديث الـ Redux Store بالبيانات الجديدة
-      // دي اللحظة اللي السيستم كله بيعرف فيها إن فيه يوزر دخل
-      dispatch(
-        setLogin({
-          user: user,
-          token: token,
-          role: user.role, // admin أو user
-        }),
-      );
+    // تحديث الـ Redux Store بالبيانات الجديدة
+    dispatch(
+      setLogin({
+        user: user,
+        token: token,
+        role: user.role, // admin أو user
+      }),
+    );
 
-      if (user.role === "admin") {
-        navigate("/admin/home"); // لو أدمن يروح لوحة التحكم
-      } else {
-        navigate("/"); // لو يوزر عادي يروح للـ Landing Page
-      }
-    } catch (error: any) {
-      // 3. رسالة خطأ
-      toast.error(error);
+    // 🚨 التعديل الذكي هنا:
+    // بنشوف لو فيه صفحة متخزنة جوه الـ state يرجع ليها، لو مفيش يروح للرئيسية "/"
+    const fromPage = location.state?.from || "/";
+
+    if (user.role === "admin") {
+      navigate("/admin/home"); // لو أدمن يروح لوحة التحكم
+    } else {
+      // لو مستخدم عادي، بنوديه للصفحة اللي كان واقف فيها (مثال: تفاصيل الغرفة) بدل اللاندينج الإجبارية
+      navigate(fromPage, { replace: true }); 
     }
-  };
-
+  } catch (error: any) {
+    // رسالة خطأ
+    toast.error(error);
+  }
+};
   return (
     <Box sx={{ maxWidth: "100%", mx: "auto", mt: 5 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>

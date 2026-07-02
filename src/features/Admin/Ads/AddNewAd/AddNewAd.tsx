@@ -159,7 +159,7 @@ export default function AddNewAd() {
               />
 
               {/* أزرار التحكم */}
-              <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+              <Stack direction="row" spacing={2} sx={{justifyContent: "flex-end" , mt: 2 }} >
                 <Button
                   variant="outlined"
                   color="inherit"

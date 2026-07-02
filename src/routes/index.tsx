@@ -43,13 +43,14 @@ export const router = createBrowserRouter([
       { index: true, element: <UserHome /> }, // UserHome
       { path: "home", element: <UserHome /> },
        { path: "explore", element: <ExplorePage /> },
+       { path: "room-details/:roomId", element: <RoomDetails /> },
+
      {
       element:<ProtectedRoute/>,
       children:[
         
       { path: "fav", element: <FavoritesPage /> },
       { path: "booking-details/:bookingId", element: <BookingDetails /> },
-      { path: "room-details/:roomId", element: <RoomDetails /> },
       { path: "profile", element: <Profile /> },
       ]
      }

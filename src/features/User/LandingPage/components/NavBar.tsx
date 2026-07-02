@@ -88,9 +88,9 @@ export default function NavBar() {
             <Link key={title} style={{ textDecoration: "none" }} to={`/${title}`}>
               <Typography
                 color={title === "home" ? "rgba(50, 82, 223, 1)" : "black"}
-                textTransform={"capitalize"}
+               
                 fontWeight={"500"}
-                sx={{ cursor: "pointer" }}
+                sx={{ cursor: "pointer", textTransform:"capitalize" }}
                 fontSize={"16px"}
               >
                 {title}
