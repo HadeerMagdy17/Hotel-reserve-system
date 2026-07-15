@@ -48,3 +48,32 @@ export const fetchRoomReviews = async (id: string) => {
     return []; // خط دفاع: لو ريكويست الريفيو فشل لأي سبب، الصفحة هتفتح برضه بس الكومنتات هتبقى فاضية
   }
 };
+
+// 1. واجهة البيانات الخاصة بالـ Review
+interface PostReviewData {
+  roomId: string | undefined;
+  rating: number | null;
+  review: string;
+}
+
+// 2. واجهة البيانات الخاصة بالـ Comment
+interface PostCommentData {
+  roomId: string | undefined;
+  comment: string;
+}
+
+/**
+ * func إرسال تقييم جديد لغرفة معينة
+ */
+export const postRoomReview = async (reviewData: PostReviewData) => {
+  const response = await axiosInstance.post("/portal/room-reviews", reviewData);
+  return response.data;
+};
+
+/**
+ * func إرسال تعليق جديد لغرفة معينة
+ */
+export const postRoomComment = async (commentData: PostCommentData) => {
+  const response = await axiosInstance.post("/portal/room-comments", commentData);
+  return response.data;
+};

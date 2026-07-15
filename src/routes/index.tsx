@@ -26,13 +26,13 @@ import Bookings from "../features/Admin/Bookings/Bookings";
 import UserHome from "../features/User/LandingPage/LandingPage";
 import ExplorePage from "../pages/ExplorePage/ExplorePage";
 import FavoritesPage from "../pages/FavoritesPage/FavoritesPage";
-import BookingDetails from "../features/User/Ui/BookingDetails/BookingDetails";
 import Profile from "../features/User/Ui/Profile/Profile";
 
 // 5. Shared Components
 import NotFound from "../common/components/NotFound";
 import ProtectedRoute from "../common/components/ProtectedRoute";
 import RoomDetails from "../features/User/Ui/RoomDetails/RoomDetails";
+import CompleteBookingDetails from "../features/User/Ui/BookingDetails/CompleteBookingDetails";
 
 export const router = createBrowserRouter([
   // --- (Landing & User Home) ---
@@ -50,7 +50,7 @@ export const router = createBrowserRouter([
       children:[
         
       { path: "fav", element: <FavoritesPage /> },
-      { path: "booking-details/:bookingId", element: <BookingDetails /> },
+      { path: "complete-booking/:bookingId", element: <CompleteBookingDetails /> },
       { path: "profile", element: <Profile /> },
       ]
      }

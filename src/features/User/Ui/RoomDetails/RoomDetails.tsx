@@ -14,19 +14,18 @@ import { useState, useEffect } from "react";
 import { fetchRoomDetails } from "../../../../services/userServices";
 import fallbackImg from "../../../../../src/assets/images/hotal2.jpg";
 import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 // Components
 import RoomFeatures from "./components/RoomFeatures";
 import BookingCalendar from "../shared/BookingCalender";
 import ReviewCard from "./components/ReviewCard";
 import ReviewForm from "./components/ReviewForm";
-import { axiosInstance } from "../../../../api/axiosInstace";
-import { PORTAL_URLS } from "../../../../api/endpoints";
 import LoginModal from "../../LandingPage/components/LoginModal";
 import NavBar from "../../LandingPage/components/NavBar";
 import Footer from "../../LandingPage/components/Footer";
 import { useAppSelector } from "../../../../redux/store/hook";
-
+import { axiosInstance } from "../../../../api/axiosInstace";
 
 export default function RoomDetails() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -36,8 +35,9 @@ export default function RoomDetails() {
   
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [isBookingLoading, setIsBookingLoading] = useState(false); // ⏳ حالة تحميل الحجز
 
-  // get room details
+  // 1. جلب تفاصيل الغرفة عبر React Query
   const {
     data: room,
     isLoading: isLoadingRoom,
@@ -47,15 +47,14 @@ export default function RoomDetails() {
     queryFn: () => fetchRoomDetails(roomId!),
     enabled: !!roomId,
   });
-//get Reviews
+
+  // 2. جلب التقييمات
   const getAllReviews = async () => {
     try {
-      const response = await axiosInstance.get(
-        `${PORTAL_URLS.getAllReviews}/${roomId}`,
-      );
+      const response = await axiosInstance.get(`/portal/room-reviews/${roomId}`);
       setReviews(response.data.data.roomReviews);
     } catch (error) {
-      const axiosError = error as AxiosError<{ message: string }>;
+      console.error("Error fetching reviews", error);
     }
   };
 
@@ -65,27 +64,56 @@ export default function RoomDetails() {
     }
   }, [roomId]);
 
-  // التحكم في أكشن زرار الحجز
-  const handleBookingSubmit = (bookingData: {
+  // 3. 🔥 دالة ربط الحجز بالـ API والتحويل لصفحة الدفع
+  const handleBookingSubmit = async (bookingData: {
     startDate: string;
     endDate: string;
     capacity: number;
     duration: number;
   }) => {
+    // أمان إضافي لو الـ Token مش موجود نفتح المودال فوراً
     if (!token) {
       setIsLoginModalOpen(true);
       return;
     }
 
-    console.log("Data to send to API:", {
-      roomId: roomId,
-      ...bookingData,
-    });
+    if (!roomId) {
+      toast.error("Room data is missing.");
+      return;
+    }
+
+    setIsBookingLoading(true);
+
+    try {
+      // حساب السعر الإجمالي الإجمالي بناءً على الأيام والخصم المتاح للغرفة
+      const priceAfterDiscount = room.price - room.price * ((room.discount || 0) / 100);
+      const totalBookingPrice = Math.trunc(priceAfterDiscount * bookingData.duration);
+
+      const response = await axiosInstance.post("/portal/booking", {
+        startDate: bookingData.startDate, // الـ Component بيبعتها جاهزة yyyy-MM-dd
+        endDate: bookingData.endDate,     // الـ Component بيبعتها جاهزة yyyy-MM-dd
+        room: roomId,
+        totalPrice: totalBookingPrice,
+      });
+
+      toast.success(response?.data?.message || "Booking created successfully!");
+
+      // سحب الـ ID الحجز الجديد لتمريره لصفحة التأكيد أو الدفع
+      const bookingId = response?.data?.data?.booking?._id;
+      
+      // التوجيه لصفحة تأكيد الحجز/الدفع مع إرسال الـ bookingId عبر الـ state
+navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      toast.error(axiosError.response?.data?.message || "Failed to complete booking.");
+    } finally {
+      setIsBookingLoading(false);
+    }
   };
 
   const handleCloseModal = () => setIsLoginModalOpen(false);
 
-  // ⏳ حالة الـ Loading
+  // ⏳ حالة الـ Loading للغرفة
   if (isLoadingRoom) {
     return (
       <Container maxWidth="xl" sx={{ py: 5 }}>
@@ -136,78 +164,43 @@ export default function RoomDetails() {
 
         {/* Dynamic Title & Location */}
         <Box sx={{ textAlign: 'center', margin: '20px' }}>
-          <Typography
-            variant="h4"
-            fontWeight={700}
-            sx={{ color: "#152C5B", mb: 1, textAlign: "center" }}
-          >
+          <Typography variant="h4" fontWeight={700} sx={{ color: "#152C5B", mb: 1 }}>
             {room.roomNumber} Room
           </Typography>
-
-          <Typography color="text.secondary" sx={{ mb: 5, textAlign: "center" }}>
+          <Typography color="text.secondary" sx={{ mb: 5 }}>
             Bogor, Indonesia
           </Typography>
         </Box>
 
-        {/* 🖼️ Dynamic Gallery */}
-        <Grid container spacing={2} sx={{ m: 5 }}>
+        {/* Dynamic Gallery */}
+        <Grid container spacing={2} sx={{ mb: 5 }}>
           <Grid item xs={12} md={7}>
-            <img
-              src={mainImage}
-              alt="Main Room"
-              style={{
-                width: "100%",
-                height: "400px",
-                objectFit: "cover",
-                borderRadius: "15px",
-              }}
-            />
+            <img src={mainImage} alt="Main Room" style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "15px" }} />
           </Grid>
           <Grid item xs={12} md={5}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <img
-                  src={displayedImages[1] || fallbackImg}
-                  alt="Sub 1"
-                  style={{
-                    width: "100%",
-                    height: "192px",
-                    objectFit: "cover",
-                    borderRadius: "15px",
-                  }}
-                />
+                <img src={displayedImages[1] || fallbackImg} alt="Sub 1" style={{ width: "100%", height: "192px", objectFit: "cover", borderRadius: "15px" }} />
               </Grid>
               <Grid item xs={12}>
-                <img
-                  src={displayedImages[2] || fallbackImg}
-                  alt="Sub 2"
-                  style={{
-                    width: "100%",
-                    height: "192px",
-                    objectFit: "cover",
-                    borderRadius: "15px",
-                  }}
-                />
+                <img src={displayedImages[2] || fallbackImg} alt="Sub 2" style={{ width: "100%", height: "192px", objectFit: "cover", borderRadius: "15px" }} />
               </Grid>
             </Grid>
           </Grid>
         </Grid>
 
-        {/* 🛠️ الـ Layout الرئيسي */}
+        {/* Layout الرئيسي */}
         <Grid container spacing={4} mt={2} sx={{ alignItems: "flex-start" }}>
           <Grid item xs={12} lg={7}>
-            <Box sx={{ m: 4 }}>
-              {[...Array(7)].map((_, i) => (
-                <Typography key={i} color="text.secondary" sx={{ mb: 2 }}>
-                  Minimal techno is a minimalist subgenre of techno music. It is
-                  characterized by a stripped-down aesthetic.
-                </Typography>
-              ))}
+            <Box sx={{ mb: 4 }}>
+              <Typography color="text.secondary" sx={{ mb: 2 }}>
+                Minimal techno is a minimalist subgenre of techno music. It is characterized by a stripped-down aesthetic.
+              </Typography>
             </Box>
             <RoomFeatures />
           </Grid>
 
-          {/* الكاليندر محمي بـ onClickCapture لمنع الـ Submit الداخلي */}
+          {/* الكاليندر */}
           <Grid item xs={12} lg={5}>
             <Box
               onClickCapture={(e) => {
@@ -218,16 +211,19 @@ export default function RoomDetails() {
                 }
               }}
             >
+              {/* تمرير الداتا والـ Handler للـ Reusable component بذكاء */}
               <BookingCalendar
                 price={room.price}
-                buttonText={token ? "Confirm Booking" : "Log in to Book"}
+                discount={room.discount || 0} // لو الـ Component عندك بيعرض الخصم
+                buttonText={token ? (isBookingLoading ? "Processing..." : "Confirm Booking") : "Log in to Book"}
                 onSubmit={handleBookingSubmit}
+                disabled={isBookingLoading}
               />
             </Box>
           </Grid>
         </Grid>
 
-        {/* 💬 قسم الـ Reviews */}
+        {/* قسم الـ Reviews */}
         {reviews.length > 0 && (
           <Grid container spacing={3} mt={5}>
             {reviews.map((review: any) => (
@@ -238,79 +234,25 @@ export default function RoomDetails() {
           </Grid>
         )}
 
-        {/* 🔐 التشييك على إضافة الكومنت أو الـ Review Form الجديد */}
+        {/* نموذج إضافة الريفيو والتعليق */}
         {token ? (
           <Box mt={8}>
             <ReviewForm roomId={room._id} getAllReviews={getAllReviews} />
           </Box>
         ) : (
-          <Box
-            sx={{
-              marginTop: "4rem",
-              padding: "2rem",
-              border: "1px solid",
-              borderColor: (theme) => theme.palette.divider,
-              borderRadius: "15px",
-              backgroundColor: (theme) => theme.palette.background.paper,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                color: "#152C5B",
-                fontWeight: "600",
-                marginBottom: "0.5rem",
-              }}
-            >
+          <Box sx={{ marginTop: "4rem", padding: "2rem", border: "1px solid", borderColor: "divider", borderRadius: "15px", textAlign: "center" }}>
+            <Typography variant="h6" sx={{ color: "#152C5B", fontWeight: "600", mb: 1 }}>
               You must be logged in to leave a comment or review.
             </Typography>
-            <Typography variant="body1" sx={{ color: "#B0B0B0" }}>
-              Please{" "}
-              <Typography
-                component="span"
-                variant="body1"
-                sx={{
-                  color: "#1ABC9C",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  mx: "0.3rem",
-                  textDecoration: "underline",
-                }}
-                onClick={() => navigate("/auth/login")}
-              >
-                Log in
-              </Typography>
-              or{" "}
-              <Typography
-                component="span"
-                variant="body1"
-                sx={{
-                  color: "#1ABC9C",
-                  cursor: "pointer",
-                  fontWeight: "600",
-                  mx: "0.3rem",
-                  textDecoration: "underline",
-                }}
-                onClick={() => navigate("/auth/register")}
-              >
-                Register
-              </Typography>{" "}
-              to add your review.
+            <Typography variant="body1" color="text.secondary">
+              Please <Link onClick={() => navigate("/auth/login")} sx={{ color: "#1ABC9C", cursor: "pointer", fontWeight: "600", mx: 0.5, textDecoration: "underline" }}>Log in</Link> 
+              or <Link onClick={() => navigate("/auth/register")} sx={{ color: "#1ABC9C", cursor: "pointer", fontWeight: "600", mx: 0.5, textDecoration: "underline" }}>Register</Link> to add your review.
             </Typography>
           </Box>
         )}
 
-        {/* الـ Login Modal الخاص بكم */}
-        <LoginModal 
-          open={isLoginModalOpen} 
-          onClose={handleCloseModal} 
-        />
+        {/* الـ Login Modal */}
+        <LoginModal open={isLoginModalOpen} onClose={handleCloseModal} />
       </Container>
       <Footer />
     </>
