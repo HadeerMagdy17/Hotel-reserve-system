@@ -1,6 +1,6 @@
 import { axiosInstance } from "../api/axiosInstace";
 import { getRoomDetails, PORTAL_URLS } from "../api/endpoints";
-import type { IRoomsResponse , FavoritesResponseType, FavoriType, IRoomDetailsResponse} from "../interface/userTypes";
+import type { IRoomsResponse , FavoritesResponseType, FavoriType} from "../interface/userTypes";
 
 export const fetchExploreRooms = async (page: number): Promise<IRoomsResponse> => {
   const response = await axiosInstance.get(getRoomDetails, {

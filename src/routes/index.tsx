@@ -33,6 +33,7 @@ import NotFound from "../common/components/NotFound";
 import ProtectedRoute from "../common/components/ProtectedRoute";
 import RoomDetails from "../features/User/Ui/RoomDetails/RoomDetails";
 import CompleteBookingDetails from "../features/User/Ui/BookingDetails/CompleteBookingDetails";
+import PaymentSuccess from "../features/User/Ui/Payment/PaymentSuccess";
 
 export const router = createBrowserRouter([
   // --- (Landing & User Home) ---
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
       { path: "fav", element: <FavoritesPage /> },
       { path: "complete-booking/:bookingId", element: <CompleteBookingDetails /> },
       { path: "profile", element: <Profile /> },
+      {path:'pay-success',element:<PaymentSuccess/>}
       ]
      }
     ],

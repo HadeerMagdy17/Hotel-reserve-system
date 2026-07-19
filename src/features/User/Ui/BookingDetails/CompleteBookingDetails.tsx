@@ -22,7 +22,8 @@ import Footer from "../../LandingPage/components/Footer";
 import NavBar from "../../LandingPage/components/NavBar";
 
 // 1. تهيئة الـ Stripe بمفتاح التشغيل
-const stripePromise = loadStripe("pk_test_51PkY2R2N...your_actual_key_here");
+const stripePromise = loadStripe("pk_test_51OTjURBQWp069pqTmqhKZHNNd3kMf9TTynJtLJQIJDOSYcGM7xz3DabzCzE7bTxvuYMY0IX96OHBjsysHEKIrwCK006Mu7mKw8"
+);
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -86,7 +87,7 @@ function CompleteBookingDetailsContent() {
     },
     onSuccess: () => {
       toast.success("Payment Successful!");
-      navigate("/home/pay-success");
+      navigate("/pay-success");
     },
     onError: (error: any) => {
       if (axios.isAxiosError(error)) {
