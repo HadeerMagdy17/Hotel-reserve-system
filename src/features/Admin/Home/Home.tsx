@@ -79,19 +79,19 @@ export default function AdminHome() {
       <Grid container spacing={3}>
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
-            <Grid item xs={12} sm={4} key={i}>
+            <Grid size={{ xs: 12, sm: 4 }}  key={i}>
               <Skeleton variant="rounded" height={140} sx={{ borderRadius: 3, marginTop: "20px" }} />
             </Grid>
           ))
         ) : (
           <>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <StatCard icon={<GridViewIcon fontSize="large" />} label="Rooms" value={totalRooms} />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12,  sm: 4  }}>
               <StatCard icon={<PendingActionsIcon fontSize="large" />} label="Booking Pending" value={pendingBookingsCount} />
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12,  sm: 4  }}>
               <StatCard icon={<GroupIcon fontSize="large" />} label="Users" value={totalUsers} />
             </Grid>
           </>
@@ -103,13 +103,13 @@ export default function AdminHome() {
       <Grid container spacing={4}>
         {isLoading ? (
           <>
-            <Grid item xs={12} md={6}><Skeleton variant="rounded" height={300} sx={{ borderRadius: "16px" }} /></Grid>
-            <Grid item xs={12} md={6}><Skeleton variant="rounded" height={300} sx={{ borderRadius: "16px" }} /></Grid>
+            <Grid  size={{ xs: 12, md: 6 }}><Skeleton variant="rounded" height={300} sx={{ borderRadius: "16px" }} /></Grid>
+            <Grid  size={{ xs: 12, md: 6 }}><Skeleton variant="rounded" height={300} sx={{ borderRadius: "16px" }} /></Grid>
           </>
         ) : (
           <>
             {/* 1. الـ Donut Chart للحجوزات */}
-            <Grid item xs={12} md={6}>
+            <Grid  size={{ xs: 12, md: 6 }}>
               <DonutCard
                 title="Bookings Status Ratio"
                 data={bookingsPieData}
@@ -122,7 +122,7 @@ export default function AdminHome() {
             </Grid>
 
             {/* 2. الـ Bar Chart للمقارنة */}
-            <Grid item xs={12} md={6} sx={{ display: "flex", flexDirection: "column" }}>
+            <Grid  size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column" }}>
               <Card sx={{ p: 3, borderRadius: "16px", border: "1px solid", borderColor: "divider", boxShadow: "none", height: "100%" }}>
                 <Typography variant="h6" fontWeight={700} sx={{ mb: 4 }}>
                   Rooms vs Pending Bookings
@@ -146,7 +146,7 @@ export default function AdminHome() {
             </Grid>
 
 {/* 3 pie */}
-              <Grid item xs={12} md={6}>
+              <Grid  size={{ xs: 12, md: 6 }}>
               <DonutCard
                 title="ads Ratio"
                 data={bookingssPieData}

@@ -65,11 +65,10 @@ export default function HeroSection() {
         <Grid
           container
           spacing={2}
-          // alignItems="center"
           sx={{ display: "flex", justifyContent: "space-between",alignItems:"center"}}
         >
           {/* left side */}
-          <Grid item xs={12} sm={8}>
+          <Grid  size={{ xs: 12 ,sm:8}} >
             <Typography
               variant="h1"
               sx={{
@@ -109,7 +108,7 @@ export default function HeroSection() {
           </Grid>
 
          {/* right side */}
-          <Grid item xs={12} sm={4}>
+          <Grid  size={{ xs: 12 ,sm:4}} >
             <Box
               sx={{
                 width: { xs: "90%", sm: "80%" },

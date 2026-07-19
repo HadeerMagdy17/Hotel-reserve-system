@@ -187,7 +187,7 @@ const onUpdateSave = (formDataJson: any) => {
         {selectedRoom && (
           modalMode === 'view' ? (
             <Grid container spacing={4}>
-              <Grid item xs={12} md={6}>
+              <Grid  size={{ xs: 12, md: 6 }}>
                 <Stack spacing={1}>
                   <InfoRow icon={<AttachMoney color="primary"/>} label="Price" value={`$${selectedRoom.price}`} />
                   <InfoRow icon={<People color="primary"/>} label="Capacity" value={selectedRoom.capacity} />
@@ -199,7 +199,7 @@ const onUpdateSave = (formDataJson: any) => {
                   </Box>
                 </Stack>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid  size={{ xs: 12, md: 6 }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: "bold" }}>Room Gallery:</Typography>
                 <Paper variant="outlined" sx={{ p: 1, height: 250, overflowY: 'auto' }}>
                   <ImageList cols={2} gap={8}>
@@ -212,11 +212,11 @@ const onUpdateSave = (formDataJson: any) => {
             </Grid>
           ) : (
             <Grid container spacing={2}>
-              <Grid item xs={6}><AppTextField label="Room Number" name="roomNumber" register={register} error={errors.roomNumber} validation={{ required: "Required" }} /></Grid>
-              <Grid item xs={6}><AppTextField label="Price" name="price" type="number" register={register} error={errors.price} validation={{ required: "Required" }} /></Grid>
-              <Grid item xs={6}><AppTextField label="Capacity" name="capacity" type="number" register={register} error={errors.capacity} validation={{ required: "Required" }} /></Grid>
-              <Grid item xs={6}><AppTextField label="Discount" name="discount" type="number" register={register} error={errors.discount} /></Grid>
-              <Grid item xs={12}>
+              <Grid  size={{ xs: 6 }}><AppTextField label="Room Number" name="roomNumber" register={register} error={errors.roomNumber} validation={{ required: "Required" }} /></Grid>
+              <Grid  size={{ xs: 6 }}><AppTextField label="Price" name="price" type="number" register={register} error={errors.price} validation={{ required: "Required" }} /></Grid>
+              <Grid  size={{ xs: 6 }}><AppTextField label="Capacity" name="capacity" type="number" register={register} error={errors.capacity} validation={{ required: "Required" }} /></Grid>
+              <Grid  size={{ xs: 6 }}><AppTextField label="Discount" name="discount" type="number" register={register} error={errors.discount} /></Grid>
+              <Grid size={{ xs: 12 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel id="edit-fac-label">Facilities</InputLabel>
                   <Controller name="facilities" control={control} render={({ field }) => (

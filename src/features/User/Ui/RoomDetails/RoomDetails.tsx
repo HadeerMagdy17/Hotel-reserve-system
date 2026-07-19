@@ -122,11 +122,11 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
           <Skeleton variant="text" width="30%" height={50} sx={{ mx: "auto", mb: 1 }} />
           <Skeleton variant="text" width="15%" height={25} sx={{ mx: "auto" }} />
         </Box>
-        <Grid container spacing={2} mb={5}>
-          <Grid item xs={12} md={7}>
+        <Grid container spacing={2} sx={{mb: 5}}>
+          <Grid  size={{ xs: 12 ,md:7}} >
             <Skeleton variant="rectangular" width="100%" height={400} sx={{ borderRadius: "15px" }} />
           </Grid>
-          <Grid item xs={12} md={5}>
+          <Grid  size={{ xs: 12,md:5 }} >
             <Skeleton variant="rectangular" width="100%" height={400} sx={{ borderRadius: "15px" }} />
           </Grid>
         </Grid>
@@ -174,15 +174,15 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
 
         {/* Dynamic Gallery */}
         <Grid container spacing={2} sx={{ mb: 5 }}>
-          <Grid item xs={12} md={7}>
+          <Grid  size={{ xs: 12 }} md={7}>
             <img src={mainImage} alt="Main Room" style={{ width: "100%", height: "400px", objectFit: "cover", borderRadius: "15px" }} />
           </Grid>
-          <Grid item xs={12} md={5}>
+          <Grid  size={{ xs: 12 }} md={5}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid  size={{ xs: 12 }}>
                 <img src={displayedImages[1] || fallbackImg} alt="Sub 1" style={{ width: "100%", height: "192px", objectFit: "cover", borderRadius: "15px" }} />
               </Grid>
-              <Grid item xs={12}>
+              <Grid  size={{ xs: 12 }}>
                 <img src={displayedImages[2] || fallbackImg} alt="Sub 2" style={{ width: "100%", height: "192px", objectFit: "cover", borderRadius: "15px" }} />
               </Grid>
             </Grid>
@@ -191,7 +191,7 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
 
         {/* Layout الرئيسي */}
         <Grid container spacing={4} mt={2} sx={{ alignItems: "flex-start" }}>
-          <Grid item xs={12} lg={7}>
+          <Grid  size={{ xs: 12 }} lg={7}>
             <Box sx={{ mb: 4 }}>
               <Typography color="text.secondary" sx={{ mb: 2 }}>
                 Minimal techno is a minimalist subgenre of techno music. It is characterized by a stripped-down aesthetic.
@@ -201,7 +201,7 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
           </Grid>
 
           {/* الكاليندر */}
-          <Grid item xs={12} lg={5}>
+          <Grid  size={{ xs: 12 }} lg={5}>
             <Box
               onClickCapture={(e) => {
                 if (!token) {
@@ -227,7 +227,7 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
         {reviews.length > 0 && (
           <Grid container spacing={3} mt={5}>
             {reviews.map((review: any) => (
-              <Grid item xs={12} md={6} lg={4} key={review._id || review.id}>
+              <Grid  size={{ xs: 12, md: 6 }} lg={4} key={review._id || review.id}>
                 <ReviewCard review={review} />
               </Grid>
             ))}

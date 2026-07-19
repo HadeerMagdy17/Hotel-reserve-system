@@ -80,7 +80,7 @@ const AddNewRoom = () => {
           <Grid container spacing={3}>
 
             {/* Row 1 */}
-            <Grid item xs={12} md={6}>
+            <Grid  size={{ xs: 12, md: 6 }}>
               <AppTextField 
                 label="Room Number" 
                 name="roomNumber" 
@@ -89,7 +89,7 @@ const AddNewRoom = () => {
                 error={errors.roomNumber}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid  size={{ xs: 12, md: 6 }}>
               <AppTextField 
                 label="Price ($)" 
                 name="price" 
@@ -101,7 +101,7 @@ const AddNewRoom = () => {
             </Grid>
 
             {/* Row 2 */}
-            <Grid item xs={12} md={6}>
+            <Grid  size={{ xs: 12, md: 6 }}>
               <AppTextField 
                 label="Capacity" 
                 name="capacity" 
@@ -111,7 +111,7 @@ const AddNewRoom = () => {
                 error={errors.capacity}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid  size={{ xs: 12, md: 6 }}>
               <AppTextField 
                 label="Discount (%)" 
                 name="discount" 
@@ -123,7 +123,7 @@ const AddNewRoom = () => {
             </Grid>
 
             {/* Facilities - مع Scroll */}
-            <Grid item xs={12} md={6}>
+            <Grid  size={{ xs: 12, md: 6 }}>
            <FormControl fullWidth error={!!errors.facilities} sx={{ mt: 1 }}>
                 <InputLabel id="facilities-label">Facilities</InputLabel>
                 <Controller
@@ -169,7 +169,7 @@ const AddNewRoom = () => {
             </Grid>
 
             {/* Upload Images */}
-            <Grid item xs={12}>
+            <Grid  size={{ xs: 12 }}>
               <Button
                 component="label"
                 variant="outlined"
@@ -211,7 +211,7 @@ const AddNewRoom = () => {
             </Grid>
 
             {/* Buttons */}
-            <Grid item xs={12}>
+            <Grid  size={{ xs: 12 }}>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
                 <Button 
                   size="large" 

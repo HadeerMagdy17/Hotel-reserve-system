@@ -40,7 +40,7 @@ export default function RoomFeatures() {
   return (
     <Grid container spacing={2} sx={{ m: 3 }}>
       {features.map((item,index) => (
-        <Grid item xs={6} md={4} key={`feature-${index}`}>
+        <Grid  size={{ xs: 12, md: 4 }} key={`feature-${index}`}>
           <Paper
             elevation={1}
             sx={{

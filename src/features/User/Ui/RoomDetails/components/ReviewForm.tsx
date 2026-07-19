@@ -79,7 +79,7 @@ export default function ReviewForm({ roomId, getAllReviews }: ReviewFormProps) {
   return (
     <Grid container spacing={4} sx={{ m: 4 }}>
       {/* ---------------- الجزء الشمال: الـ Rate ---------------- */}
-      <Grid item xs={12} md={6}>
+      <Grid  size={{ xs: 12, md: 6 }}>
         <Typography variant="h5" sx={{ mb: 2, color: "#152C5B", fontWeight: "600" }}>
           Rate the Room now
         </Typography>
@@ -106,7 +106,7 @@ export default function ReviewForm({ roomId, getAllReviews }: ReviewFormProps) {
       </Grid>
 
       {/* ---------------- الجزء اليمين: الـ Comment ---------------- */}
-      <Grid item xs={12} md={6} sx={{ mb: 2 }}>
+      <Grid  size={{ xs: 12, md: 6 }} sx={{ mb: 2 }}>
         <Typography variant="h5" sx={{ mb: 2, color: "#152C5B", fontWeight: "600" }}>
           Add Your Comment
         </Typography>
