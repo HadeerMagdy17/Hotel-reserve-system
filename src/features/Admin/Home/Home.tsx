@@ -72,8 +72,8 @@ export default function AdminHome() {
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
-      <Typography variant="h4" fontWeight={700} mb={0.5}>Welcome Back, Admin! 👋</Typography>
-      <Typography variant="body2" color="text.secondary" mb={3}>Dashboard Analysis</Typography>
+      <Typography variant="h4" sx={{mb:0.5,fontWeight:700}} >Welcome Back, Admin! 👋</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{mb:3}}>Dashboard Analysis</Typography>
 
       {/* 💡 IMPROVEMENT: الـ Skeletons أثناء التحميل لمنع الـ Layout Shift */}
       <Grid container spacing={3}>
@@ -124,7 +124,7 @@ export default function AdminHome() {
             {/* 2. الـ Bar Chart للمقارنة */}
             <Grid  size={{ xs: 12, md: 6 }} sx={{ display: "flex", flexDirection: "column" }}>
               <Card sx={{ p: 3, borderRadius: "16px", border: "1px solid", borderColor: "divider", boxShadow: "none", height: "100%" }}>
-                <Typography variant="h6" fontWeight={700} sx={{ mb: 4 }}>
+                <Typography variant="h6" sx={{ mb: 4,fontWeight:700 }}>
                   Rooms vs Pending Bookings
                 </Typography>
                 <Box sx={{ width: "100%", height: 240 }}>

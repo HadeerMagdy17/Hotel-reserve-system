@@ -190,8 +190,8 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
         </Grid>
 
         {/* Layout الرئيسي */}
-        <Grid container spacing={4} mt={2} sx={{ alignItems: "flex-start" }}>
-          <Grid  size={{ xs: 12 }} lg={7}>
+        <Grid container spacing={4}  sx={{ alignItems: "flex-start",mt:2 }}>
+          <Grid  size={{ xs: 12 ,lg:7}}>
             <Box sx={{ mb: 4 }}>
               <Typography color="text.secondary" sx={{ mb: 2 }}>
                 Minimal techno is a minimalist subgenre of techno music. It is characterized by a stripped-down aesthetic.
@@ -201,7 +201,7 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
           </Grid>
 
           {/* الكاليندر */}
-          <Grid  size={{ xs: 12 }} lg={5}>
+          <Grid  size={{ xs: 12,lg:5 }}>
             <Box
               onClickCapture={(e) => {
                 if (!token) {
@@ -225,9 +225,9 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
 
         {/* قسم الـ Reviews */}
         {reviews.length > 0 && (
-          <Grid container spacing={3} mt={5}>
+          <Grid container spacing={3}sx={{mt:5}}>
             {reviews.map((review: any) => (
-              <Grid  size={{ xs: 12, md: 6 }} lg={4} key={review._id || review.id}>
+              <Grid  size={{ xs: 12, md: 6,lg:4 }}  key={review._id || review.id}>
                 <ReviewCard review={review} />
               </Grid>
             ))}
@@ -236,7 +236,7 @@ navigate(`/complete-booking/${bookingId}`, { state: { bookingId } });
 
         {/* نموذج إضافة الريفيو والتعليق */}
         {token ? (
-          <Box mt={8}>
+          <Box sx={{mt:8}}>
             <ReviewForm roomId={room._id} getAllReviews={getAllReviews} />
           </Box>
         ) : (

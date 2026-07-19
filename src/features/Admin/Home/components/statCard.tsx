@@ -23,7 +23,7 @@ export const StatCard = ({ icon, label, value }: StatCardProps) => (
     }}
   >
     {icon}
-    <Typography variant="h6" mt={1}>{label}</Typography>
-    <Typography variant="h4" fontWeight={600}>{Number(value).toLocaleString()}</Typography>
+    <Typography variant="h6" sx={{mt:1}}>{label}</Typography>
+    <Typography variant="h4"  sx={{fontWeight:600}}>{Number(value).toLocaleString()}</Typography>
   </Card>
 );

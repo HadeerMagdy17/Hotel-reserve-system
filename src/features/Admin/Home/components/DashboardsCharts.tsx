@@ -40,12 +40,12 @@ export const DonutCard = ({ data, total, legend, title }: any) => (
           </PieChart>
         </ResponsiveContainer>
         <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)" }}>
-          <Typography variant="h4" fontWeight={700}>{Number(total).toLocaleString()}</Typography>
+          <Typography variant="h4" sx={{fontWeight:700}}>{Number(total).toLocaleString()}</Typography>
           <Typography variant="caption" color="text.secondary">Total</Typography>
         </Box>
       </Box>
       
-      <Stack direction="row" sx={{justifyContent:"center"}} spacing={2} flexWrap="wrap" mt={2}>
+      <Stack direction="row" sx={{justifyContent:"center",mt:2}} spacing={2} flexWrap="wrap">
         {legend.map((l: any, i: number) => (
           <Stack key={i} direction="row" sx={{alignItems:"center"}} spacing={0.5}>
             <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: l.color }} />
@@ -62,7 +62,7 @@ export const DonutCard = ({ data, total, legend, title }: any) => (
 // ─── 2️⃣ مكون الـ Bar Chart ────────────────────────────────────────────
 export const CustomBarChart = ({ data, colors, theme, title }: any) => (
   <Card sx={{ p: 3, borderRadius: "16px", border: "1px solid", borderColor: "divider", boxShadow: "none", height: "100%" }}>
-    <Typography variant="h6" fontWeight={700} sx={{ mb: 4 }}>
+    <Typography variant="h6"  sx={{ mb: 4,fontWeight:700 }}>
       {title}
     </Typography>
     <Box sx={{ width: "100%", height: 240 }}>
